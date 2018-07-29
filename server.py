@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 FB_API_URL = 'https://graph.facebook.com/v2.6/me/messages'
 VERIFY_TOKEN = 'oh, this can be anything I want then?'
-PAGE_ACCESS_TOKEN = 'EAAGs7tDg3NgBADUbZASOkL2I4kyU8GQhoOxg7iNzIaU4CEUQynwlbFtvRm5ojCxAOxUEVqxhMWDnUMJj4uCs5892ZCulRNChxXCG2SxZAk6QZB2Bg73f0PUYlq0v0jh2cjdjjjMZAFxMCuYzrkV8xYZBt224yAopphGfiMycMMBAZDZD'
+PAGE_ACCESS_TOKEN = 'EAAGs7tDg3NgBAIQRlRAZAY3Y15hfVznAMNRxZAjEiugaPyYuiU7q9rfi9U6DTrvoGhrpDT84t8aPaxamycVufOK3kFsjewKwBnntOCcrM07uMOy4gtxRNTB1Vs4JpmqdqdmwZC4ONZCrZBrsfXhVL7IwRxt7h9AVFSwWsoGRSjQZDZD'
 
 
 def get_bot_response(message):
@@ -29,7 +29,8 @@ def respond(sender, message):
 def is_user_message(message):
     return (message.get('message') and message['mesasge'].get("is_echo"))
 
-@app.route("/webhook")
+
+@app.route("/webhook", methods=['GET','POST'])
 def listen():
     if request.method == 'GET':
         return verify_webhook(request)
@@ -40,7 +41,7 @@ def listen():
         for x in event:
             text = x['message']['text']
             sender_id = x['sender']['id']
-            response(sender_id, text)
+            respond(sender_id, text)
 
         return "ok"
 
