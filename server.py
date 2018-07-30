@@ -2,6 +2,8 @@ from flask import Flask, request
 
 import requests
 
+import chitchat
+
 app = Flask(__name__)
 
 FB_API_URL = 'https://graph.facebook.com/v2.6/me/messages'
@@ -11,7 +13,7 @@ PAGE_ACCESS_TOKEN = 'EAAGs7tDg3NgBAIQRlRAZAY3Y15hfVznAMNRxZAjEiugaPyYuiU7q9rfi9U
 
 def get_bot_response(message):
     """This is just a placeholder where some real nlp stuff will eventually go when the app is developed beyond the tutorial level"""
-    return "Blank response to '{}'".format(message)
+    return chitchat.send_message(message)
 
 
 def verify_webhook(req):
