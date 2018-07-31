@@ -70,3 +70,7 @@ def send_message(recipient_id, text):
     )
 
     return response.json()
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', post=8080)

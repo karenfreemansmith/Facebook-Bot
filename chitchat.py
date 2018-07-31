@@ -1,5 +1,6 @@
 import random
 import re
+import time
 
 name = "Alex"
 user = "you"
@@ -59,6 +60,10 @@ responses = {
         "I was thinking about {0}".format(random.choice(thoughts)),
         "I am wondering if you ever think about {0}".format(random.choice(thoughts)),
     ],
+    'memory': [
+        "How could I forget?",
+        "I would rather not remember that..."
+    ],
     "yes": ["me too"],
     "no": ["too bad"],
     "please": ["of course","why not?"],
@@ -70,7 +75,8 @@ responses = {
     "your name": [
         "My name is {0}".format(name),
         "They call me {0}".format(name),
-        "I go by {0}".format(name)
+        "I go by {0}".format(name),
+        "The name is BOT, {0}-BOT".format(name)
     ],
     "weather": [
         "The weather is {0}".format(random.choice(weather)),
@@ -107,10 +113,35 @@ keywords = {
     'yourwelcome': ['your welcome','no problem'],
     'excuse':['excuse me', 'pardon', 'sorry'],
     'weather': ['weather'],
+    'memory': ['do you remember', 'remember when'],
     'your name': ['your name'],
     "you like": ['you like', 'you want', 'you love', 'you have', 'you do'],
     "dislike": ['hate','not like','dislike', 'don\'t like']
     }
+
+rules = {
+    'if (.*)': [
+        "Do you really think it's likely that {0}",
+        'Do you wish that {0}',
+        'What do you think about {0}',
+        'Really--if {0}'
+    ],
+    'I want (.*)': [
+        'What would it mean if you got {0}',
+        'Why do you want {0}',
+        "What's stopping you from getting {0}"
+    ],
+    'do you think (.*)': [
+        'if {0}? Absolutely.',
+        'No chance'
+    ],
+    'do you remember (.*)': [
+        'Did you think I would forget {0}',
+        "Why haven't you been able to forget {0}",
+        'What about {0}',
+        'Yes .. and?'
+    ]
+}
 
 patterns = {}
 
@@ -168,6 +199,7 @@ def match_rule(rules, message):
 
 
 def respond(message):
+    time.sleep(0.85)
     name = find_name(message)
     if name is None:
         intent = match_intent(message.lower())
@@ -193,18 +225,3 @@ def respond(message):
 def send_message(message):
     print(message)
     return bot_template.format(respond(message))
-
-# Talk to the bot loop until done...
-#user = input(bot_template.format("Hi, what is your name? "))
-#user_template = user.upper() + ": {0}"
-#msg = "my name is " + user
-#send_message(msg)
-
-#while True:
-#    msg = input(user_template.format(""))
-#    if match_intent(msg.lower()) == "goodbye":
-#        send_message(msg)
-#        print(bot_template.format("It was nice chatting with you!"))
-#        break
-#    else:
-#        send_message(msg)
