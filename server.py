@@ -73,4 +73,4 @@ def send_message(recipient_id, text):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', post=8080)
+    app.run(debug=True, host='0.0.0.0', post=80)

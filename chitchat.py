@@ -3,8 +3,9 @@ import re
 import time
 
 name = "Alex"
-user = "you"
 bot_template = name.upper() + "-BOT: {0}"
+user = "you"
+user_template = user.upper() + ": {0}"
 
 weather = [
     "cloudy","hot","cold","snowing","raining","sunny","windy","nice","awful","foggy"
@@ -199,7 +200,7 @@ def match_rule(rules, message):
 
 
 def respond(message):
-    time.sleep(0.85)
+    time.sleep(0.5)
     name = find_name(message)
     if name is None:
         intent = match_intent(message.lower())
@@ -217,6 +218,7 @@ def respond(message):
             else:
                 bot_message = response
     else:
+        user = name
         bot_message = "Hello, {0}!".format(name)
     print(bot_message)
     return bot_message
