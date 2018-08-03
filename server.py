@@ -44,7 +44,6 @@ def listen():
             text = x['message']['text']
             sender_id = x['sender']['id']
             respond(sender_id, text)
-
         return "ok"
 
 
@@ -73,4 +72,4 @@ def send_message(recipient_id, text):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', post=80)
+    app.run(debug=True, host='0.0.0.0', port=80)
