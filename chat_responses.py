@@ -105,45 +105,65 @@ def check_response(phrase, msg):
         new_score = score[0]+1.0
         query = "UPDATE responses set score={} WHERE id={}".format(new_score,response_id)
         execute_query(query)
+        update_order(phrase, msg)
     else:
         add_response(phrase)
-    update_order(phrase, msg)
+        add_order(phrase, msg)
 
 
 def update_order(response, trigger):
     r_id = get_id(response)
     t_id = get_id(trigger)
-    s = check_existing(r_id, t_id)
+    s = check_frequency(r_id, t_id)
     query = "UPDATE response_order set score={} WHERE response_id = {} AND trigger_id = {}".format(s,r_id, t_id)
+    print(query)
+    execute_query(query)
+
+
+def check_frequency(r,t):
+    query = "SELECT score FROM response_order WHERE response_id=={} AND trigger_id=={} ORDER BY score".format(r,t)
+    print(query)
+    execute_query(query)
+
+def add_order(response, trigger):
+    r_id = get_id(response)
+    t_id = get_id(trigger)
+    s = check_frequency(r_id, t_id)
+    query = "INSERT INTO response_order(response_id, trigger_id, score) VALUES ('{}','{}','{}');".format(r_id, t_id, 1)
+    print(query)
     execute_query(query)
 
 
 def get_id(r):
-    query = "SELECT id FROM responses WHERE response=='{}' ORDER BY score".format(r)
+    query = "SELECT id FROM responses WHERE response=='''{}''' ORDER BY score".format(r)
     results = execute_query(query)
     response_id = 0
+    print(results)
     if len(results) > 0:
         response_id = results[0]
     return response_id
 
 
-def check_existing(r_id, t_id):
-    query = "SELECT score FROM response_order WHERE response_id = {} AND trigger_id = {}".format(r_id, t_id)
-    score = execute_query(query)
-    if score == None:
-        query = "INSERT INTO response_order(response_id, trigger_id, score) VALUES ('{}','{}','{}');".format(r_id, t_id, 1)
-        score = 1
-    else:
-        if len(score) > 0:
-            score = execute_query(query)
-            score = score[0] + 1
-    return score
-
-
 def get_emoji():
+    import random
     emojis = ["LOL","😉","💩","😭","😃","😊",'😇','😘','😇','😏','😳',
         '😍','👽',"😅",'😱','😫','😬','😈','👿','😡','😤','😖',
         '😎','😋','😴','😒','👏','👍','👀', "👻",'🔥','💰','☕',
         '🍭','🍩',"🐾",'🍄','🌹',"🌺",'OMG',"Oh, wow...",'Okay',
         'I hope so!','Tell me more...','I feel the same.','TMI']
     return random.choice(emojis)
+
+
+def print_table(table):
+    query = "SELECT * FROM '{}';".format(table)
+    print(query)
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+        else:
+            for row in result:
+                print(row)
+            result.close()
+    print("\n")
