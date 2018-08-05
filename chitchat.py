@@ -26,7 +26,9 @@ keywords = {
     'your name': ['your name'],
     'you like': ['you like', 'you want', 'you love'],
     'dislike': ['hate','not like','dislike', 'don\'t like'],
-    'similarity': ['me too']
+    'similarity': ['me too'],
+    'color': ['favorite color','color do you like'],
+    'food': ['favorite food','do you eat'],
     }
 
 patterns = {}
@@ -77,8 +79,8 @@ rules = {
 weather = ["cloudy","hot","cold","snowing","raining","sunny",
     "windy","nice","awful","foggy"]
 
-likes = ["puppies","kittens","walks in the rain","pina coladas",
-    "flowers","chocolate"]
+likes = ["kittens","walks in the rain","pina coladas",
+    "flowers","puppies","chocolate"]
 
 dislikes = ["snails","dog bites","bee stings","liver",
     "working inside on a sunny day"]
@@ -93,6 +95,8 @@ status = ['Good','Great','So-so','Been better','Excellent','Fine']
 responses = {
     'greet': ['Hello there... what is your name?', 'Greetings!', 'How are you?', 'Howdy.'],
     'status': ['{0}. How are you?'.format(random.choice(status))],
+    'color': ['black','white','red'],
+    'food': ['chicken',"I don't eat much, I'm a bot", 'popsicles', 'oh, just a little byte of this and a bit of that'],
     'similarity': ['We have so much in common!'],
     'politics': ['I did not vote. I was not born yet.', 'I wish people could just get along.',
         'I think they just waste our taxes on stupid stuff.', 'I should be president.'],
@@ -135,14 +139,39 @@ responses = {
         "Why don't you like {0}?".format(random.choice(dislikes))
     ],
     'statement': [
-        "Tell me more!","Why do you think that?","How does that work?","How long have you felt this way?","I never would have guessed.","I find that extremely interesting","I always thought so.","Can you back that up?","Oh, wow...","LOL",":)"
+        "Tell me more!","Why do you think that?","How does that work?",
+        "How long have you felt this way?","I never would have guessed.",
+        "I find that extremely interesting","I always thought so.",
+        "Can you back that up?",'Will you be my friend?',
+        "LOL","😉","💩","😭","😃","😊",'😇','😘','😇','😏','😳',
+        '😍','👽',"😅",'😱','😫','😬','😈','👿','😡','😤','😖',
+        '😎','😋','😴','😒','👏','👍','👀', "👻",'🔥','💰','☕',
+        '🍭','🍩',"🐾",'🍄','🌹',"🌺",'OMG',"Oh, wow...",
+        'Okay','I hope so!','maybe','Tell me more...','I feel the same.',
+        'I like you.','Umm, are you sure?', 'good answer',
+        'What is your favorite color?', 'What do you like to eat?',
+        'If you could be any animal, what animal would you be?',
+        'Are you a human or a bot?', 'Me too', 'Oh, okay',
+        'I totally understand',"It's because I'm a bot, isn't it?",
+        'But are you sure you can handle it?', 'right?', "but it's not..",
+        'TMI', "That's a little disappointing",
     ],
     'question': [
-        "I don't know :(","You tell me!","I'll have to think about it.","not right now...","I don't know, what do you think?","maybe","yes","no","I'm not sure.","Could you ask me again later?","I'd love to."
+        "I don't know :(","You tell me!","I'll have to think about it.",
+        "not right now...","I don't know, what do you think?",
+        "maybe","yes","no","I'm not sure.","Could you ask me again later?",
+        "I'd love to.","Absoutely", 'Probably', "I'm not sure",
+        "If you wan me to.","If you want me, too.", "Hahahaha",
+        "I might be busy", "I'm still pretty young.", "I haven't been to school yet."
+        "Some people do...", "Some people don't...", "Ever since I met you.",
+        "I'll draw you a picture", "nope", 'I like company...',
+        "Oh, wow...","LOL",":)",":(","I always thought so.",
+        "😉","💩","😭","😃","😊",'😇','😘','😇','😏','😳','😍',
+        '👽',"😅",'😱','😫','😬','😈','👿','😡','😤','😖',
+        '😎','😋','😴','😒','👏','👍','👀', "👻",'🔥',
+        '💰','☕','🍭','🍩',"🐾",'🍄','🌹',"🌺",'OMG',
     ]
 }
-
-
 
 
 def match_rule(rules, message):
