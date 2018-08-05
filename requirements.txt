@@ -6,3 +6,4 @@ numpy
 pandas
 nltk
 sqlalchemy
+spacy
