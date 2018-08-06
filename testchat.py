@@ -1,10 +1,10 @@
-import chat
+import learn_chat as chat
 
 msg = "hello"
 while True:
     msg = input(chat.respond(msg) + "\n")
-    if msg == 'goodbye':
-        log = chat.get_log()
-        for d in log:
-            print(d)
+    if msg == 'q':
+        #log = chat.get_log()
+        #for d in log:
+            #print(d)
         break
