@@ -53,9 +53,9 @@ def create_database():
         print(e)
 
 
-def print_table(table, condition):
+def get_all(table, condition):
     query = "SELECT * FROM {} ORDER BY {};".format(table,condition)
-    print(query)
+    results = []
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
@@ -63,9 +63,24 @@ def print_table(table, condition):
             print(e)
         else:
             for row in result:
-                print(row)
+                results.append(row)
             result.close()
-    print("\n")
+    return results
+
+
+def possible_ids(table, parent_id):
+    query = "SELECT child_id FROM {} WHERE parent_id == {};".format(table,parent_id)
+    results = []
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+        else:
+            for row in result:
+                results.append(row[0])
+            result.close()
+    return results
 
 
 def find_row(table, id):
@@ -86,13 +101,13 @@ def find_row(table, id):
 
 def insert_data(table, str, n):
     query = '''INSERT INTO {}(value, score) VALUES ("{}",{});'''.format(table, str, n)
-    print (query)
+    #print (query)
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
         except Exception as e:
             result = e
-    print(result)
+    return get_id(table, str)
 
 
 def update_data(table, id, str, n):
@@ -110,10 +125,9 @@ def insert_relation(table, parent_id, child_id):
     print (query)
     with engine.connect() as connection:
         try:
-            result = connection.execute(query)
+            connection.execute(query)
         except Exception as e:
             print(e)
-    print(result)
 
 
 def get_id(table, value):

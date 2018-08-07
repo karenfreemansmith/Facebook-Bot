@@ -1,5 +1,5 @@
 import learn_db as db
-
+import random
 
 def add_context(str, n):
     db.insert_data('contexts', str, n)
@@ -31,8 +31,14 @@ def add_intent_order(prompt, reply):
 
 # RESPONSES
 def get_response(prompt_id):
-    value, count = db.find_row('responses', prompt_id)
-    return value
+    reply = 'let me think about that...'
+    pr_ids = db.possible_ids('response_order',prompt_id)
+    if len(pr_ids) > 0:
+        reply, not_used = db.find_row('responses', random.choice(pr_ids))
+    else:
+        possible_responses = db.get_all('responses','score')
+        reply = random.choice(possible_responses)[1]
+    return reply
 
 
 def update_count(id):
@@ -41,13 +47,16 @@ def update_count(id):
     db.update_data('responses', id, value, count)
 
 
-def add_response(str):
+def add_response(trigger, str):
     id = db.get_id('responses', str)
     if id == 0:
-        db.insert_data('responses', str, 1)
+        id = db.insert_data('responses', str, 1)
     else:
         update_count(id)
-    return get_response(db.get_id('responses', str))
+    prompt_id = db.get_id('responses', trigger)
+    print(trigger, ": ", prompt_id)
+    db.insert_relation('response_order', prompt_id, id)
+    return get_response(id)
 
 
 def add_response_token(response_id, token_id):

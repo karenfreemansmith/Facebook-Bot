@@ -1,5 +1,6 @@
 import learn_models as m
 
 
-def respond(msg):
-    return str(m.add_response(msg))
+def respond(bot_msg, human_msg):
+    resp = m.add_response(bot_msg, human_msg)
+    return resp
