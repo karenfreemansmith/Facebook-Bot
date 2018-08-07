@@ -53,6 +53,20 @@ def create_database():
         print(e)
 
 
+def print_all(table, condition):
+    query = "SELECT * FROM {} ORDER BY {};".format(table,condition)
+    results = []
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+        else:
+            for row in result:
+                print(row)
+            result.close()
+
+
 def get_all(table, condition):
     query = "SELECT * FROM {} ORDER BY {};".format(table,condition)
     results = []
@@ -101,7 +115,6 @@ def find_row(table, id):
 
 def insert_data(table, str, n):
     query = '''INSERT INTO {}(value, score) VALUES ("{}",{});'''.format(table, str, n)
-    #print (query)
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
@@ -117,12 +130,10 @@ def update_data(table, id, str, n):
             result = connection.execute(query)
         except Exception as e:
             result = e
-    print(result)
 
 
 def insert_relation(table, parent_id, child_id):
     query = '''INSERT INTO {}(parent_id, child_id, frequency) VALUES ({},{}, 1);'''.format(table, parent_id, child_id)
-    print (query)
     with engine.connect() as connection:
         try:
             connection.execute(query)

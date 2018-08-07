@@ -1,12 +1,13 @@
 # import stuff as needed
 from flask import Flask, request
 import requests
-import chat
+import learn_chat as chat
 
 app = Flask(__name__)
 FB_API_URL = 'https://graph.facebook.com/v2.6/me/messages'
-VERIFY_TOKEN = 'oh, this can be anything I want then?'
+VERIFY_TOKEN = 'self-teaching-bot-is-online'
 PAGE_ACCESS_TOKEN = 'EAAGs7tDg3NgBAIQRlRAZAY3Y15hfVznAMNRxZAjEiugaPyYuiU7q9rfi9U6DTrvoGhrpDT84t8aPaxamycVufOK3kFsjewKwBnntOCcrM07uMOy4gtxRNTB1Vs4JpmqdqdmwZC4ONZCrZBrsfXhVL7IwRxt7h9AVFSwWsoGRSjQZDZD'
+bot_msg = 'x'
 
 # process messages
 def verify_webhook(req):
@@ -17,7 +18,9 @@ def verify_webhook(req):
 
 
 def send_message(sender, msg):
-    text = chat.get_message(msg)
+    global bot_msg
+    text = chat.respond(bot_msg, msg, sender)
+    bot_msg = text
 
     payload = {
         'message': {

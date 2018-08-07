@@ -54,7 +54,6 @@ def add_response(trigger, str):
     else:
         update_count(id)
     prompt_id = db.get_id('responses', trigger)
-    print(trigger, ": ", prompt_id)
     db.insert_relation('response_order', prompt_id, id)
     return get_response(id)
 
