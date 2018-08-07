@@ -29,7 +29,7 @@ def add_intent_order(prompt, reply):
     return "ok"
 
 
-# RESPONSES
+# *** RESPONSES ***
 def get_response(prompt_id):
     reply = 'let me think about that...'
     pr_ids = db.possible_ids('response_order',prompt_id)
@@ -41,10 +41,10 @@ def get_response(prompt_id):
     return reply
 
 
-def update_count(id):
-    value, count = db.find_row('responses', id)
+def update_count(table, id):
+    value, count = db.find_row(table, id)
     count += 1
-    db.update_data('responses', id, value, count)
+    db.update_data(table, id, value, count)
 
 
 def add_response(trigger, str):
@@ -52,17 +52,28 @@ def add_response(trigger, str):
     if id == 0:
         id = db.insert_data('responses', str, 1)
     else:
-        update_count(id)
+        update_count('responses',id)
     prompt_id = db.get_id('responses', trigger)
     db.insert_relation('response_order', prompt_id, id)
+    add_tokens(id, str)
     return get_response(id)
 
 
+
+# *** TOKENS ***
 def add_response_token(response_id, token_id):
     db.insert_relation(response_id, token_id)
     return "ok"
 
 
-def add_token(str, n):
-    db.insert_data('tokens', str, n)
-    return db.get_id('tokens', str)
+def add_tokens(resp_id, str):
+    from nltk.tokenize import word_tokenize
+
+    tokens = word_tokenize(str)
+    for t in tokens:
+        id = db.get_id('tokens', t)
+        if id == 0:
+            id = db.insert_data('tokens', t, 1)
+        else:
+            update_count('tokens',id)
+        db.insert_relation('response_tokens', resp_id, id)

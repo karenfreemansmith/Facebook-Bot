@@ -11,6 +11,6 @@ def respond(bot_msg, human_msg, sender):
 
 
 def clean(shit):
-    stuff = re.compile("fuck|god|damn", re.I)
+    stuff = re.compile("fuck|Goddamit|nigger", re.I)
     cleaned = re.sub(stuff, "#@%$", shit)
     return cleaned
