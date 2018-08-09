@@ -86,6 +86,29 @@ def print_all(table, condition):
             result.close()
 
 
+def show_context_intent_reponses(c,i):
+        query = "SELECT c.value, i.value, r.id, r.value FROM contexts AS c \
+                JOIN context_intents AS ci\
+                ON c.id == ci.parent_id \
+                JOIN intents AS i \
+                ON ci.child_id == i.id \
+                JOIN intent_responses AS ir\
+                ON i.id == ir.parent_id \
+                JOIN responses AS r \
+                ON ir.child_id == r.id \
+                WHERE c.id = {} AND i.id = {};".format(c, i)
+        results = []
+        with engine.connect() as connection:
+            try:
+                result = connection.execute(query)
+            except Exception as e:
+                print(e)
+            else:
+                for row in result:
+                    print(row)
+                result.close()
+
+
 def get_all(table, condition):
     query = "SELECT * FROM {} ORDER BY {};".format(table,condition)
     results = []
