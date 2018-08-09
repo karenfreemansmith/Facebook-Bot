@@ -1,5 +1,21 @@
 from sqlalchemy import create_engine
-engine = create_engine('sqlite:///chat.db')
+engine = create_engine('sqlite:///copy.db')
+copy_engine = create_engine('sqlite:///chat.db')
+
+def move_all(table, new_table):
+    query = "SELECT value, score FROM {};".format(table)
+    results = []
+    with copy_engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+        else:
+            for row in result:
+                print(row.value, row.score)
+                #insert_data(new_table, row.value, row.score)
+            result.close()
+
 
 def create_database():
     from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey
@@ -15,6 +31,7 @@ def create_database():
     contexts = Table('contexts', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('value', String),
+                        Column('details', String),
                         Column('count', Integer),
                         Column('score', Float))
 
@@ -155,14 +172,14 @@ def find_row(table, id):
     return value, count
 
 
-def insert_data(table, str, n):
-    query = '''INSERT INTO {}(value, score) VALUES ("{}",{});'''.format(table, str, n)
+def insert_data(table, label, details, n):
+    query = '''INSERT INTO {}(value, score) VALUES ("{}","{}",{});'''.format(table, label, n)
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
         except Exception as e:
             result = e
-    return get_id(table, str)
+    return get_id(table, label)
 
 
 def update_data(table, id, str, n):

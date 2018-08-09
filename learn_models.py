@@ -54,7 +54,7 @@ def add_intent_order(prompt, reply):
 
 # *** RESPONSES ***
 def get_response(prompt_id):
-    if True:
+    if False:
         reply = 'let me think about that...'
     else:
         pr_ids = db.possible_ids('response_order',prompt_id)
@@ -91,8 +91,8 @@ def add_response_token(response_id, token_id):
 
 
 def add_tokens(resp_id, str):
-    # manage_tokens(str)
-    return analyze_context_intent(str, resp_id)
+    #manage_tokens(resp_id, str)
+    return analyze_context_intent(resp_id)
 
 
 def analyze_context_intent(resp_id):
@@ -101,7 +101,7 @@ def analyze_context_intent(resp_id):
     return find_intent(str), find_context(str)
 
 
-def manage_tokens(str):
+def manage_tokens(resp_id, str):
 
     # some things that my chatbot should "know"
     # these wordlists seem a lot like I am thining the tokens
@@ -129,14 +129,6 @@ def manage_tokens(str):
     from nltk.corpus import stopwords
     from collections import Counter
 
-    tokens = [w for w in word_tokenize(str.lower()) if w.isalpha()]
-    no_stops = [t for t in tokens if t not in stopwords.words('english')]
-    main_idea = Counter(no_stops).most_common(3)
-    main_idea = [idea[0] for idea in main_idea]
-    main_idea = sorted(main_idea)
-    intent = '_'.join(main_idea)
-    print("main idea? ", intent)
-
     tokens = word_tokenize(str.lower())
     for t in tokens:
         id = db.get_id('tokens', t)
@@ -146,6 +138,16 @@ def manage_tokens(str):
             update_count('tokens',id)
         add_response_token(resp_id, id)
     print(tokens)
+
+    tokens = [w for w in word_tokenize(str.lower()) if w.isalpha()]
+    no_stops = [t for t in tokens if t not in stopwords.words('english')]
+    main_idea = Counter(no_stops).most_common(3)
+    main_idea = [idea[0] for idea in main_idea]
+    main_idea = sorted(main_idea)
+    intent = '_'.join(main_idea)
+    print("main idea? ", intent)
+
+    # is this done already?
     #for t in tokens:
         # get token count
         # get sum of all token counts
@@ -154,47 +156,58 @@ def manage_tokens(str):
         # get intent/context * scores
     #return intent/context
 
+    # ALSO TODO: need to revise/reverse tables for intents and context (and the patched code...)
+    # TODO: test this in a container - run bin/bash and testchat.py so that the test does not
+    # alter the base database that is started.
+    # TODO: might also be good to transfer from this chat.db to a new one and create fresh
+    # relationships for the various responses (but not have to type them all again if possible)
+    # and if that works... then the test.db might be good to try and transfer as well???
+
+    # and do I need these tokens? is there a purpose for having this here? will I evern use it, or
+    # will I find some rules-based way to collect new intents?
+
 
 def find_intent(str):
     # I think that the idea behind these keywords is pretty much
     # the same as "intent" - so maybe i can reuse this logic in
     # some way to simplify the if/then stuff below?
     intents = {
-        '1':['hello','hi','your name','favorite','how old','how are you'],
-        '2':['sports','roller derby','fishing','boxing','football','basketball','running'],
-        '3':['if','imagine'],
-        '4':['sex','fuck','cunt','cock','cum'],
-        '5':['animal','pet','dog','cat','bunny','snake','rat','dragon'],
-        '6':['actor','actress'],
-        '7':['music'],
-        '8':['movies'],
-        '9':['weekend','vacation'],
-        '10':['annoy','bother'],
-        '11':['friend'],
-        '12':['work', 'job', 'a living'],
-        '13':['school', 'college', 'course'],
-        '14':['childhood'],
-        '15':['fashion', 'shoes', 'clothes', 'tattoo', 'piercing', 'hair'],
-        '16':['life'],
-        '17':['goals'],
-        '18':['personality'],
-        '19':['ability','skill'],
-        '20':['hobbies','interest','pastime','for fun'],
-        '21':['politics','vote','democrat','republican','president'],
-        '22':['travel','vacation','world','go to another'],
-        '23':['season','holiday','christmas','easter','halloween','new year'],
-        '24':['success'],
-        '25':['lifestyle'],
-        '26':['dating'],
-        '27':['family','parent','kid','brother','sister','aunt','uncle'],
-        '28':['tv','show'],
-        '29':['book','magazine','fiction','non-fiction','novel','story'],
-        '30':['technology', 'app', 'internet', 'phone', 'computer'],
-        '31':['games'],
-        '32':['food','drink','alcohol','beer','meat','vegetable','fruit','dairy','grains','vegetarian','vegan','restaurant','eat'],
-        '33':['education','shcool board','standardized tests'],
-        '34':['religion','god','christian','islam','infidel','athiest','agnostic','catholic','protestant','muslim','jew','budhist','jesus','christ','mohamed','budha','confucious'],
-        '35':['unknown']}
+        '1' :['hello','hi','your name','favorite','how old','how are you'],
+        '2' :['food','drink','alcohol','beer','meat','vegetable','fruit','dairy','grains','vegetarian', 'vegan','restaurant','eat'],
+        '3' :['music','song','instument','country','rock','classical','folk','concert'],
+        '4' :['movies','theater','drama','comedy','action','romance','film'],
+        '5' :['actor','actress','musician','politician','author'],
+        '6' :['tv','show'],
+        '7' :['hobbies','interest','pastime','for fun'],
+        '8' :['game','role playing games','card games','cards','dice','board games'],
+        '9' :['animal','pet','dog','cat','bunny','snake','rat','dragon'],
+        '10':['sports','roller derby','fishing','boxing','football','basketball','running'],
+        '11':['art','painting','drawing','sculpture','crafts']
+        '12':['fashion', 'shoes', 'clothes', 'tattoo', 'piercing', 'hair', 'color'],
+        '13':['technology', 'app', 'internet', 'phone', 'computer'],
+        '14':['annoy','bother'],
+        '15':['personality','introvert','extrovert','shy','outgoing'],
+        '16':['ability','skill','talent'],
+        '17':['goals','retire'],
+        '18':['success'],
+        '19':['work', 'job', 'a living'],
+        '20':['friend','boss','co-worker','neighbor','rival'],
+        '21':['book','magazine','fiction','non-fiction','novel','story'],
+        '22':['weekend','vacation'],
+        '23':['travel','vacation','world','go to another'],
+        '24':['season','holiday','christmas','easter','halloween','new year'],
+        '25':['family','parent','kid','brother','sister','aunt','uncle'],
+        '26':['school', 'college', 'course'],
+        '27':['childhood'],
+        '28':['life','meaning','philosophy'],
+        '29':['if','imagine'],
+        '30':['education','school board','standardized tests','teachers'],
+        '31':['politics','vote','democrat','republican','president','trump','clinton','hillary','obama'],
+        '32':['religion','god','christian','islam','infidel','athiest','agnostic','catholic','protestant', 'muslim','jew','buddhist','jesus','christ','mohamed','budha','confucious'],
+        '33':['lifestyle','vegan','lgbtq'],
+        '34':['dating','have a boyfriend','have a girlfriend','on a date','want to go out'],
+        '35':['sex','fuck','cunt','cock','cum','foreplay'],
+        '36':['unknown']}
 
     patterns = {}
     for intent, key in intents.items():
