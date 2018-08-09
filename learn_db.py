@@ -1,13 +1,21 @@
 from sqlalchemy import create_engine
-engine = create_engine('sqlite:///test.db')
+engine = create_engine('sqlite:///chat.db')
 
 def create_database():
     from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey
     metadata = MetaData()
 
+    users = Table('users', metadata,
+                        Column('id', Integer, primary_key=True),
+                        Column('value', String),
+                        Column('details', String),
+                        Column('count', Integer),
+                        Column('score', Float))
+
     contexts = Table('contexts', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('value', String),
+                        Column('count', Integer),
                         Column('score', Float))
 
     context_intents = Table('context_intents', metadata,
@@ -18,7 +26,14 @@ def create_database():
     intents = Table('intents', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('value', String),
+                        Column('details', String),
+                        Column('count', Integer),
                         Column('score', Float))
+
+    response_order = Table('intent_order', metadata,
+                        Column('parent_id', Integer, ForeignKey('intents.id')),
+                        Column('child_id', Integer, ForeignKey('intents.id')),
+                        Column('frequency', Integer))
 
     intent_responses = Table('intent_responses', metadata,
                         Column('parent_id', Integer, ForeignKey('intents.id')),
@@ -28,6 +43,8 @@ def create_database():
     responses = Table('responses', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('value', String),
+                        Column('details', String),
+                        Column('count', Integer),
                         Column('score', Float))
 
     response_order = Table('response_order', metadata,
@@ -36,13 +53,15 @@ def create_database():
                         Column('frequency', Integer))
 
     response_tokens = Table('response_tokens', metadata,
-                        Column('parent_id', Integer, ForeignKey('responses.id')),
+                        Column('parent_id', Integer, ForeignKey('intents.id')),
                         Column('child_id', Integer, ForeignKey('tokens.id')),
                         Column('frequency', Integer))
 
     tokens = Table('tokens', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('value', String),
+                        Column('details', String),
+                        Column('count', Integer),
                         Column('score', Float))
 
     try:
@@ -132,6 +151,22 @@ def update_data(table, id, str, n):
             result = e
 
 
+def get_frequency(table, parent_id, child_id):
+    query = '''SELECT frequency FROM {} WHERE parent_id == {} AND child_id == {};'''.format(table, parent_id, child_id)
+    count = 0
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+            for row in result:
+                count = row[0]
+                print('updated count: ', count)
+        except Exception as e:
+            print(e)
+        else:
+            result.close()
+    return count
+
+
 def insert_relation(table, parent_id, child_id):
     query = '''INSERT INTO {}(parent_id, child_id, frequency) VALUES ({},{}, 1);'''.format(table, parent_id, child_id)
     with engine.connect() as connection:
@@ -139,6 +174,15 @@ def insert_relation(table, parent_id, child_id):
             connection.execute(query)
         except Exception as e:
             print(e)
+
+
+def update_relation(table, parent_id, child_id, frequency):
+    query = '''UPDATE {} SET frequency = '{}' WHERE parent_id == {} AND child_id == {};'''.format(table, frequency, parent_id, child_id)
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            result = e
 
 
 def get_id(table, value):
