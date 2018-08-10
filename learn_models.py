@@ -53,16 +53,16 @@ def add_intent_order(prompt, reply):
 
 
 # *** RESPONSES ***
-def get_response(prompt_id):
+def get_response(prompt_id, c, i):
     if False:
         reply = 'let me think about that...'
     else:
-        pr_ids = db.possible_ids('response_order',prompt_id)
+        pr_ids = db.possible_ids(c,i)
         if len(pr_ids) > 0:
             reply, not_used = db.find_row('responses', random.choice(pr_ids))
         else:
             possible_responses = db.get_all('responses','score')
-            reply = random.choice(possible_responses)[1]
+            reply = "no response found" #random.choice(possible_responses)[1]
     return reply
 
 
@@ -77,7 +77,7 @@ def add_response(trigger, str):
     i, c = add_tokens(id, str)
     add_intent_response(i, id)
     add_context_intent(c, i)
-    return get_response(id)
+    return get_response(id, c, i)
 
 
 # *** TOKENS ***
@@ -182,7 +182,7 @@ def find_intent(str):
         '8' :['game','role playing games','card games','cards','dice','board games'],
         '9' :['animal','pet','dog','cat','bunny','snake','rat','dragon'],
         '10':['sports','roller derby','fishing','boxing','football','basketball','running'],
-        '11':['art','painting','drawing','sculpture','crafts']
+        '11':['art','painting','drawing','sculpture','crafts'],
         '12':['fashion', 'shoes', 'clothes', 'tattoo', 'piercing', 'hair', 'color'],
         '13':['technology', 'app', 'internet', 'phone', 'computer'],
         '14':['annoy','bother'],
@@ -213,7 +213,7 @@ def find_intent(str):
     for intent, key in intents.items():
         patterns[intent] = re.compile('\\b|\\b'.join(key))
 
-    matched_intent = '35'
+    matched_intent = '36'
     for intent, pattern in patterns.items():
         if pattern.search(str.lower()):
             matched_intent = intent
@@ -287,7 +287,7 @@ def find_context(str):
     for context, key in contexts.items():
         patterns[context] = re.compile('\\b|\\b'.join(key))
 
-    matched_context = '5'
+    matched_context = '2'
     for context, pattern in patterns.items():
         if pattern.search(str.lower()):
             matched_context = context

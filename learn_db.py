@@ -1,9 +1,19 @@
 from sqlalchemy import create_engine
 engine = create_engine('sqlite:///copy.db')
 copy_engine = create_engine('sqlite:///chat.db')
+#engine = create_engine('sqlite:///test.db')
 
-def move_all(table, new_table):
-    query = "SELECT value, score FROM {};".format(table)
+def run_query(query):
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+
+
+def copy_all(table,start,stop,prompt):
+
+    query = "SELECT * FROM {} WHERE id > {} AND id < {}".format(table, start, stop)
     results = []
     with copy_engine.connect() as connection:
         try:
@@ -11,9 +21,34 @@ def move_all(table, new_table):
         except Exception as e:
             print(e)
         else:
+            import learn_models as m
             for row in result:
-                print(row.value, row.score)
-                #insert_data(new_table, row.value, row.score)
+                print(row)
+                m.add_response(prompt,row.value)
+            result.close()
+
+
+def view_all(r):
+    query = "SELECT c.value, i.value, r.id, r.value FROM contexts AS c \
+            JOIN context_intents AS ci\
+            ON c.id == ci.parent_id \
+            JOIN intents AS i \
+            ON ci.child_id == i.id \
+            JOIN intent_responses AS ir\
+            ON i.id == ir.parent_id \
+            JOIN responses AS r \
+            ON ir.child_id == r.id \
+            WHERE r.id = {};".format(r)
+    results = []
+
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(query)
+        except Exception as e:
+            print(e)
+        else:
+            for row in result:
+                print(row)
             result.close()
 
 
@@ -141,19 +176,32 @@ def get_all(table, condition):
     return results
 
 
-def possible_ids(table, parent_id):
-    query = "SELECT child_id FROM {} WHERE parent_id == {};".format(table,parent_id)
-    results = []
-    with engine.connect() as connection:
-        try:
-            result = connection.execute(query)
-        except Exception as e:
-            print(e)
-        else:
-            for row in result:
-                results.append(row[0])
-            result.close()
-    return results
+def possible_ids(c,i):
+    if False:
+        print(find_row('contexts',c))
+        print(find_row('intents',i))
+    else:
+        query = "SELECT c.value, i.value, r.id, r.value FROM contexts AS c \
+                JOIN context_intents AS ci\
+                ON c.id == ci.parent_id \
+                JOIN intents AS i \
+                ON ci.child_id == i.id \
+                JOIN intent_responses AS ir\
+                ON i.id == ir.parent_id \
+                JOIN responses AS r \
+                ON ir.child_id == r.id \
+                WHERE c.id = {} AND i.id = {};".format(c, i)
+        results = []
+        with engine.connect() as connection:
+            try:
+                result = connection.execute(query)
+            except Exception as e:
+                print(e)
+            else:
+                for row in result:
+                    results.append(row[2])
+                result.close()
+        return results
 
 
 def find_row(table, id):
@@ -172,8 +220,8 @@ def find_row(table, id):
     return value, count
 
 
-def insert_data(table, label, details, n):
-    query = '''INSERT INTO {}(value, score) VALUES ("{}","{}",{});'''.format(table, label, n)
+def insert_data(table, label, n):
+    query = '''INSERT INTO {}(value, score) VALUES ("{}",{});'''.format(table, label, n)
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
@@ -183,7 +231,7 @@ def insert_data(table, label, details, n):
 
 
 def update_data(table, id, str, n):
-    query = '''UPDATE {} SET value = '{}', score = {} WHERE id == {};'''.format(table, str, n, id)
+    query = '''UPDATE {} SET value = "{}", score = {} WHERE id == {};'''.format(table, str, n, id)
     with engine.connect() as connection:
         try:
             result = connection.execute(query)
